@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Data.Entity;
 
 namespace University
 {
@@ -28,6 +28,25 @@ namespace University
             using (var context = _factory.Create())
             {
                 return context.Students.ToList();
+            }
+        }
+
+        public void Remove(int id)
+        {
+            using (var context = _factory.Create())
+            {
+                var temp = new Student() { StudentID = id };
+                context.Entry<Student>(temp).State = EntityState.Deleted;
+                context.SaveChanges();
+            }
+        }
+
+        public void Update(Student student)
+        {
+            using (var context = _factory.Create())
+            {
+                context.Entry(student).State = EntityState.Modified;
+                context.SaveChanges();
             }
         }
     }

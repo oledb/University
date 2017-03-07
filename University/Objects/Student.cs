@@ -12,6 +12,6 @@ namespace University
         public string Name { get; set; }
         public string Surname { get; set; }
         public int Age { get; set; }
-        public StudentInfo Info { get; set; }
+        //public StudentInfo Info { get; set; }
     }
 }
