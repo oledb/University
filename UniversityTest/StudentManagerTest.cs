@@ -9,7 +9,7 @@ using University;
 namespace UniversityTest
 {
     [TestFixture]
-    public class TestUsers
+    public class StudentManagerTest
     {
         [SetUp]
         public void CreateDB()
@@ -28,7 +28,7 @@ namespace UniversityTest
                 Age = 20
             };
             var factory = new FakeContextFactory();
-            var students = new StudentManager(factory);
+            var students = new University.StudentsManager(factory);
 
             //Act
             students.Add(s);
@@ -47,7 +47,7 @@ namespace UniversityTest
             //Arrange
             var factory = new FakeContextFactory();
             factory.CreateStudents();
-            var students = new StudentManager(factory);
+            var students = new University.StudentsManager(factory);
 
             //Act
             var list = students.Get();
@@ -62,7 +62,7 @@ namespace UniversityTest
             //Arrange
             var factory = new FakeContextFactory();
             factory.CreateStudents();
-            var students = new StudentManager(factory);
+            var students = new University.StudentsManager(factory);
 
             //Act
             var student = students.Get().Where(s => s.Name == "Albert").SingleOrDefault();
@@ -76,12 +76,12 @@ namespace UniversityTest
         }
 
         [Test]
-        public void UpdateStudentInDb()
+        public void UpdateStudent()
         {
             //Arrange
             var factory = new FakeContextFactory();
             factory.CreateStudents();
-            var students = new StudentManager(factory);
+            var students = new University.StudentsManager(factory);
             var student = students.Get().Where(s => s.Name == "Albert").SingleOrDefault();
 
             //Act
@@ -92,6 +92,66 @@ namespace UniversityTest
             //Assert
             Assert.IsNotNull(student2);
             Assert.AreEqual("Einstein", student2.Surname);
+        }
+
+        [Test]
+        public void AddStudentInfo()
+        {
+            //Arrange
+            var factory = new FakeContextFactory();
+            var students = new University.StudentsManager(factory);
+            var student = new Student()
+            {
+                Name = "Isaak",
+                Surname = "Newton",
+                Age = 25,
+            };
+            students.Add(student);
+
+            //Act
+            var info = new StudentInfo()
+            {
+                Email = "Isaak.Newton@example.com",
+                Hobby = "Sience",
+                Additional = "Love apples"
+            };
+            student.Info = info;
+            students.Update(student);
+            var output = students.Get().Where(s => s.Name == "Issak").SingleOrDefault();
+
+            //Assert
+            Assert.IsNotNull(student.Info);
+            Assert.AreEqual("Isaak.Newton@example.com", student.Info.Email);
+            Assert.AreEqual("Love apples", student.Info.Additional);
+        }
+
+        [Test]
+        public void AddStudentWithInfo()
+        {
+            //Arrange
+            var factory = new FakeContextFactory();
+            var students = new University.StudentsManager(factory);
+            var student = new Student()
+            {
+                Name = "Isaak",
+                Surname = "Newton",
+                Age = 25,
+                Info = new StudentInfo()
+                {
+                    Email = "Isaak.Newton@example.com",
+                    Hobby = "Sience",
+                    Additional = "Love apples"
+                }
+        };
+            //Act
+            students.Add(student);
+            var output = students.Get().Where(s => s.Name == "Isaak").SingleOrDefault();
+
+            //Assert
+            Assert.IsNotNull(output);
+            Assert.IsNotNull(output.Info);
+            Assert.AreEqual("Isaak", output.Name);
+            Assert.AreEqual("Isaak.Newton@example.com", output.Info.Email);
         }
     }
 }

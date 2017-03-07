@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace University
 {
     public class StudentInfo
     {
+        [ForeignKey("Student")]
         public int StudentInfoID { get; set; }
         public Student Student { get; set; }
         public string Email { get; set; }

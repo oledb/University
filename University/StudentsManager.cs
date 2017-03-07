@@ -6,10 +6,10 @@ using System.Data.Entity;
 
 namespace University
 {
-    public class StudentManager
+    public class StudentsManager
     {
         private IContextFactory _factory;
-        public StudentManager(IContextFactory factory)
+        public StudentsManager(IContextFactory factory)
         {
             _factory = factory;
         }
@@ -19,6 +19,10 @@ namespace University
             using (var context = _factory.Create())
             {
                 context.Students.Add(s);
+                if (s.Info != null)
+                {
+                    context.StudentInfos.Add(s.Info);
+                }
                 context.SaveChanges();
             }
         }
@@ -43,8 +47,15 @@ namespace University
 
         public void Update(Student student)
         {
+            var old = Get().Where(s => s.StudentID == student.StudentID).SingleOrDefault();
+            var infoIsNull = old.Info == null;
             using (var context = _factory.Create())
             {
+                if (infoIsNull && student.Info != null)
+                {
+                    student.Info.Student = student;
+                    context.StudentInfos.Add(student.Info);
+                }
                 context.Entry(student).State = EntityState.Modified;
                 context.SaveChanges();
             }
