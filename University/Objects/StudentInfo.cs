@@ -8,6 +8,7 @@ namespace University
 {
     public class StudentInfo
     {
+        public int StudentInfoID { get; set; }
         public Student Student { get; set; }
         public string Email { get; set; }
         public string Hobby { get; set; }

@@ -8,6 +8,7 @@ namespace University
 {
     public class Subject
     {
+        public int SubjectID { get; set; }
         public string Name { get; set; }
         public int CountHourInWeek { get; set; }
         public IEnumerable<Student> Students { get; set; }
