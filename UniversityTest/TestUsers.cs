@@ -21,7 +21,8 @@ namespace UniversityTest
                 Surname = "Rembo",
                 Age = 20
             };
-            var students = new StudentManager(null);
+            var factory = new FakeContextFactory();
+            var students = new StudentManager(factory);
 
             //Act
             students.Add(s);
