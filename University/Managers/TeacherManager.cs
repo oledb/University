@@ -18,6 +18,7 @@ namespace University
         protected override IEnumerable<Teacher> readObject(Func<Teacher, bool> isValid,
             UniversityContext context)
         {
+            context.Teachers.Load();
             var query = context.Teachers.AsExpandable().Where(isValid);
             return query;
         }

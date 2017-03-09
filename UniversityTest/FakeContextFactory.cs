@@ -1,6 +1,7 @@
 ﻿using Effort;
 using System.Data.Common;
 using University;
+using System.Diagnostics;
 
 namespace UniversityTest
 {
@@ -10,12 +11,22 @@ namespace UniversityTest
         static FakeContextFactory()
         {
             RecreateDb();
+            var t = new DefaultTraceListener();
+            t.Name = "SQL DEBUG";
+            Debug.Listeners.Add(t);
+
         }
         public UniversityContext Create()
         {
             var context = new UniversityContext(connection);
             context.Database.CreateIfNotExists();
+            context.Database.Log = Write;
             return context;
+        }
+
+        static void Write(string value)
+        {
+            Debug.Write(value);
         }
 
         public static void RecreateDb()

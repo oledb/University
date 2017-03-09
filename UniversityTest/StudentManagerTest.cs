@@ -192,7 +192,7 @@ namespace UniversityTest
         {
             //Arrange
             var factory = new FakeContextFactory();
-            var students = new University.StudentsManager(factory);
+            var students = new StudentsManager(factory);
             students.Add(new Student()
             {
                 Name = "Isaak",
