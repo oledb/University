@@ -19,10 +19,6 @@ namespace University
             using (var context = _factory.Create())
             {
                 context.Students.Add(s);
-                if (s.Info != null)
-                {
-                    context.StudentInfos.Add(s.Info);
-                }
                 context.SaveChanges();
             }
         }
@@ -30,9 +26,7 @@ namespace University
         public List<Student> Get()
         {
             using (var context = _factory.Create())
-            {
-                return context.Students.ToList();
-            }
+                return context.Students.Include(s => s.Info).ToList();
         }
 
         public void Remove(int id)
@@ -40,7 +34,7 @@ namespace University
             using (var context = _factory.Create())
             {
                 var temp = new Student() { StudentID = id };
-                context.Entry<Student>(temp).State = EntityState.Deleted;
+                context.Entry(temp).State = EntityState.Deleted;
                 context.SaveChanges();
             }
         }
@@ -56,9 +50,22 @@ namespace University
                     student.Info.Student = student;
                     context.StudentInfos.Add(student.Info);
                 }
+                else if (!infoIsNull && student.Info != null)
+                    context.Entry(student.Info).State = EntityState.Modified;
+                context.Entry(student).State = EntityState.Modified;
+                context.SaveChanges();
+            }
+        }
+
+        public void RemoveInfo(Student student)
+        {
+            using (var context = _factory.Create())
+            {
+                context.Entry(student.Info).State = EntityState.Deleted;
                 context.Entry(student).State = EntityState.Modified;
                 context.SaveChanges();
             }
         }
     }
 }
+
