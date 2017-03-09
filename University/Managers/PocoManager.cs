@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace University.Managers
+namespace University
 {
     public abstract class PocoManager<T> where T : class
     {
@@ -14,38 +14,57 @@ namespace University.Managers
             factory = contextFactory;
         }
 
-        protected abstract void addObject(T obj, UniversityContext context);
-        protected abstract IQueryable<T> getObject(Func<T, bool> isValid,
+        protected abstract void createObject(T obj, UniversityContext context);
+        protected abstract IEnumerable<T> readObject(Func<T, bool> isValid,
             UniversityContext context);
-        protected abstract void removeObject(T obj, UniversityContext context);
+        protected abstract void updateObject(T obj, UniversityContext context);
+        protected abstract void deleteObject(T obj, UniversityContext context);
 
-        public void Add(T obj)
+        public void Create(T obj)
         {
             using (var context = factory.Create())
             {
-                addObject(obj, context);
+                createObject(obj, context);
                 context.SaveChanges();
             }
         }
 
-        public List<T> Get()
+        public List<T> Read()
         {
             using (var context = factory.Create())
             {
-                return getObject(o => true, context).ToList();
+                return readObject(o => true, context).ToList();
             }
         }
 
-        public List<T> Get(Func<T, bool> isValid)
+        public List<T> Read(Func<T, bool> isValid)
         {
             using (var context = factory.Create())
-                return getObject(isValid, context).ToList();
+                return readObject(isValid, context).ToList();
         }
 
-        public T GetSingle(Func<T, bool> isValid)
+        public T ReadSingle(Func<T, bool> isValid)
         {
             using (var context = factory.Create())
-                return getObject(isValid, context).SingleOrDefault();
+                return readObject(isValid, context).SingleOrDefault();
+        }
+
+        public void Update(T obj)
+        {
+            using (var context = factory.Create())
+            {
+                updateObject(obj, context);
+                context.SaveChanges();
+            }
+        }
+
+        public void Delete(T obj)
+        {
+            using (var context = factory.Create())
+            {
+                deleteObject(obj, context);
+                context.SaveChanges();
+            }
         }
     }
 }

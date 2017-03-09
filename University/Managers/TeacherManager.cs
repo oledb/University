@@ -1,33 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.Entity;
+using LinqKit;
 
 namespace University
 {
-    public class TeacherManager
+    public class TeacherManager : PocoManager<Teacher>
     {
-        private IContextFactory _factory;
-        public TeacherManager(IContextFactory factory)
+        public TeacherManager(IContextFactory factory) : base(factory) { }
+
+        protected override void createObject(Teacher obj, UniversityContext context)
         {
-            _factory = factory;
-        }
-        public void Add(Teacher teacher)
-        {
-            using (var context = _factory.Create())
-            {
-                context.Teachers.Add(teacher);
-                context.SaveChanges();
-            }
+            context.Teachers.Add(obj);
         }
 
-        public List<Teacher> Get()
+        protected override IEnumerable<Teacher> readObject(Func<Teacher, bool> isValid,
+            UniversityContext context)
         {
-            using (var context = _factory.Create())
-            {
-                return context.Teachers.ToList();
-            }
+            var query = context.Teachers.AsExpandable().Where(isValid);
+            return query;
+        }
+
+        protected override void deleteObject(Teacher obj, UniversityContext context)
+        {
+            context.Entry(obj).State = EntityState.Deleted;
+        }
+
+        protected override void updateObject(Teacher obj, UniversityContext context)
+        {
+            context.Entry(obj).State = EntityState.Modified;
         }
     }
 }
