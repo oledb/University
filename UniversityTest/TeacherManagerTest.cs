@@ -19,12 +19,13 @@ namespace UniversityTest
         public void AddTeacherToDb()
         {
             //Arrange
+            var factory = new FakeContextFactory();
             var teacher = new Teacher()
             {
                 Name = "Karl",
                 Surname = "Marx"
             };
-            var teachers = new TeacherManager();
+            var teachers = new TeacherManager(factory);
 
             //Act
             teachers.Add(teacher);
