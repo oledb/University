@@ -59,8 +59,9 @@
     <Compile Include="Objects\StudentInfo.cs" />
     <Compile Include="Objects\Subject.cs" />
     <Compile Include="Objects\Teacher.cs" />
-    <Compile Include="StudentsManager.cs" />
+    <Compile Include="Managers\StudentsManager.cs" />
     <Compile Include="Infrastracture\UniversityContext.cs" />
+    <Compile Include="Managers\TeacherManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
