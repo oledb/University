@@ -11,9 +11,6 @@ namespace UniversityTest
         static FakeContextFactory()
         {
             RecreateDb();
-            var t = new DefaultTraceListener();
-            t.Name = "SQL DEBUG";
-            Debug.Listeners.Add(t);
 
         }
         public UniversityContext Create()
@@ -26,7 +23,7 @@ namespace UniversityTest
 
         static void Write(string value)
         {
-            Debug.Write(value);
+            Debug.Write(value,"SQL Output");
         }
 
         public static void RecreateDb()

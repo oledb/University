@@ -1,17 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace University
 {
     public abstract class PocoManager<T> where T : class
     {
-        private IContextFactory factory;
+        protected IContextFactory factory;
         internal PocoManager(IContextFactory contextFactory)
         {
             factory = contextFactory;
+        }
+        
+        protected void useContext(Action<UniversityContext> use)
+        {
+            using (var context = factory.Create())
+            {
+                use(context);
+                context.SaveChanges();
+            }
         }
 
         protected abstract void createObject(T obj, UniversityContext context);

@@ -28,11 +28,11 @@ namespace UniversityTest
                 Age = 20
             };
             var factory = new FakeContextFactory();
-            var students = new University.StudentsManager(factory);
+            var students = new StudentsManager(factory);
 
             //Act
-            students.Add(s);
-            List<Student> st = students.Get();
+            students.Create(s);
+            List<Student> st = students.Read();
 
             //Assert
             Assert.AreEqual(1, st.Count);
@@ -47,10 +47,10 @@ namespace UniversityTest
             //Arrange
             var factory = new FakeContextFactory();
             factory.CreateStudents();
-            var students = new University.StudentsManager(factory);
+            var students = new StudentsManager(factory);
 
             //Act
-            var list = students.Get();
+            var list = students.Read();
 
             //Assert
             Assert.AreEqual(5, list.Count);
@@ -65,10 +65,10 @@ namespace UniversityTest
             var students = new StudentsManager(factory);
 
             //Act
-            var student = students.Get().Where(s => s.Name == "Albert").SingleOrDefault();
-            students.Remove(student.StudentID);
-            var student2 = students.Get().Where(s => s.Name == "Albert").SingleOrDefault();
-            var list = students.Get();
+            var student = students.ReadSingle(s => s.Name == "Albert");
+            students.Delete(student);
+            var student2 = students.ReadSingle(s => s.Name == "Albert");
+            var list = students.Read();
 
             //Assert
             Assert.IsNull(student2);
@@ -81,13 +81,13 @@ namespace UniversityTest
             //Arrange
             var factory = new FakeContextFactory();
             factory.CreateStudents();
-            var students = new University.StudentsManager(factory);
-            var student = students.Get().Where(s => s.Name == "Albert").SingleOrDefault();
+            var students = new StudentsManager(factory);
+            var student = students.ReadSingle(s => s.Name == "Albert");
 
             //Act
             student.Name = "Gregory";
             students.Update(student);
-            var student2 = students.Get().Where(s => s.Name == "Gregory").SingleOrDefault();
+            var student2 = students.ReadSingle(s => s.Name == "Gregory");
 
             //Assert
             Assert.IsNotNull(student2);
@@ -99,14 +99,14 @@ namespace UniversityTest
         {
             //Arrange
             var factory = new FakeContextFactory();
-            var students = new University.StudentsManager(factory);
+            var students = new StudentsManager(factory);
             var student = new Student()
             {
                 Name = "Isaak",
                 Surname = "Newton",
                 Age = 25,
             };
-            students.Add(student);
+            students.Create(student);
 
             //Act
             var info = new StudentInfo()
@@ -117,7 +117,7 @@ namespace UniversityTest
             };
             student.Info = info;
             students.Update(student);
-            var output = students.Get().Where(s => s.Name == "Issak").SingleOrDefault();
+            var output = students.ReadSingle(s => s.Name == "Isaak");
 
             //Assert
             Assert.IsNotNull(student.Info);
@@ -130,7 +130,7 @@ namespace UniversityTest
         {
             //Arrange
             var factory = new FakeContextFactory();
-            var students = new University.StudentsManager(factory);
+            var students = new StudentsManager(factory);
             var student = new Student()
             {
                 Name = "Isaak",
@@ -144,8 +144,8 @@ namespace UniversityTest
                 }
             };
             //Act
-            students.Add(student);
-            var output = students.Get().Where(s => s.Name == "Isaak").SingleOrDefault();
+            students.Create(student);
+            var output = students.ReadSingle(s => s.Name == "Isaak");
 
             //Assert
             Assert.IsNotNull(output);
@@ -159,8 +159,8 @@ namespace UniversityTest
         {
             //Arrange
             var factory = new FakeContextFactory();
-            var students = new University.StudentsManager(factory);
-            students.Add(new Student()
+            var students = new StudentsManager(factory);
+            students.Create(new Student()
             {
                 Name = "Isaak",
                 Surname = "Newton",
@@ -175,10 +175,10 @@ namespace UniversityTest
             
 
             //Act
-            var student = students.Get().Where(s => s.Name == "Isaak").SingleOrDefault();
+            var student = students.ReadSingle(s => s.Name == "Isaak");
             student.Info.Email = "Isaak.Newton@example.com";
             students.Update(student);
-            var output = students.Get().Where(s => s.Name == "Isaak").SingleOrDefault();
+            var output = students.ReadSingle(s => s.Name == "Isaak");
 
             //Assert
             Assert.IsNotNull(output);
@@ -193,7 +193,7 @@ namespace UniversityTest
             //Arrange
             var factory = new FakeContextFactory();
             var students = new StudentsManager(factory);
-            students.Add(new Student()
+            students.Create(new Student()
             {
                 Name = "Isaak",
                 Surname = "Newton",
@@ -207,9 +207,9 @@ namespace UniversityTest
             });
 
             //Act
-            var student = students.Get().Where(s => s.Name == "Isaak").SingleOrDefault();
-            students.RemoveInfo(student);
-            var output = students.Get().Where(s => s.Name == "Isaak").SingleOrDefault();
+            var student = students.ReadSingle(s => s.Name == "Isaak");
+            students.DeleteInfo(student);
+            var output = students.ReadSingle(s => s.Name == "Isaak");
 
             //Assert
             Assert.IsNotNull(output);

@@ -1,70 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using LinqKit;
 using System.Data.Entity;
 
 namespace University
 {
-    public class StudentsManager
+    public class StudentsManager : PocoManager<Student>
     {
-        private IContextFactory _factory;
-        public StudentsManager(IContextFactory factory)
-        {
-            _factory = factory;
-        }
+        public StudentsManager(IContextFactory factory) : base(factory) { }
 
-        public void Add(Student s)
+        public void DeleteInfo(Student student)
         {
-            using (var context = _factory.Create())
-            {
-                context.Students.Add(s);
-                context.SaveChanges();
-            }
-        }
-
-        public List<Student> Get()
-        {
-            using (var context = _factory.Create())
-                return context.Students.Include(s => s.Info).ToList();
-        }
-
-        public void Remove(int id)
-        {
-            using (var context = _factory.Create())
-            {
-                var temp = new Student() { StudentID = id };
-                context.Entry(temp).State = EntityState.Deleted;
-                context.SaveChanges();
-            }
-        }
-
-        public void Update(Student student)
-        {
-            var old = Get().Where(s => s.StudentID == student.StudentID).SingleOrDefault();
-            var infoIsNull = old.Info == null;
-            using (var context = _factory.Create())
-            {
-                if (infoIsNull && student.Info != null)
+                useContext(context => 
                 {
-                    student.Info.Student = student;
-                    context.StudentInfos.Add(student.Info);
-                }
-                else if (!infoIsNull && student.Info != null)
-                    context.Entry(student.Info).State = EntityState.Modified;
-                context.Entry(student).State = EntityState.Modified;
-                context.SaveChanges();
-            }
+                    context.Entry(student.Info).State = EntityState.Deleted;
+                    context.Entry(student).State = EntityState.Modified;
+                });
         }
 
-        public void RemoveInfo(Student student)
+        protected override void createObject(Student obj, UniversityContext context)
         {
-            using (var context = _factory.Create())
+            context.Students.Add(obj);
+        }
+
+        protected override IEnumerable<Student> readObject(Func<Student, bool> isValid, UniversityContext context)
+        {
+            return context.Students.Include(s => s.Info).AsExpandable().Where(isValid);
+        }
+
+        protected override void updateObject(Student obj, UniversityContext context)
+        {
+            var old = ReadSingle(s => s.StudentID == obj.StudentID);
+            var infoIsNull = old.Info == null;
+            if (infoIsNull && obj.Info != null)
             {
-                context.Entry(student.Info).State = EntityState.Deleted;
-                context.Entry(student).State = EntityState.Modified;
-                context.SaveChanges();
+                obj.Info.Student = obj;
+                context.StudentInfos.Add(obj.Info);
             }
+            else if (!infoIsNull && obj.Info != null)
+                context.Entry(obj.Info).State = EntityState.Modified;
+            context.Entry(obj).State = EntityState.Modified;
+            context.SaveChanges();
+        }
+
+        protected override void deleteObject(Student obj, UniversityContext context)
+        {
+            if (obj.Info != null)
+                context.Entry(obj.Info).State = EntityState.Deleted;
+            context.Entry(obj).State = EntityState.Deleted;
         }
     }
 }
